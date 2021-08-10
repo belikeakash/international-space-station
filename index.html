@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin=""
+    ></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="wavy">
+      <span style="--i:1">S</span>
+      <span style="--i:2">P</span>
+      <span style="--i:3">A</span>
+      <span style="--i:4">c</span>
+      <span style="--i:5">E</span>
+      <span style="--i:6">&nbsp &nbsp</span>
+      <span style="--i:7">S</span>
+      <span style="--i:8">T</span>
+      <span style="--i:9">A</span>
+      <span style="--i:10">T</span>
+      <span style="--i:11">I</span>
+      <span style="--i:12">o</span>
+      <span style="--i:1">N</span>
+
+  </div>
+    <p class="para">
+      Latitude : <span id="lat"></span> <br />
+      Longitude : <span id="lon"></span>
+    </p>
+
+    <div id="issMap"></div>
+
+    <div class="footer">All rights reserved ©akash2021</div>
+
+    <script>
+      const mymap = L.map("issMap").setView([0, 0], 1);
+
+      var myIcon = L.icon({
+        iconUrl: "iss.png",
+        iconSize: [50, 32],
+        iconAnchor: [25, 16],
+      });
+
+      const marker = L.marker([0, 0], { icon: myIcon }).addTo(mymap);
+      let firstTime = true;
+      const attribution =
+        '&copy; <a href = "https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+      const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+      const tiles = L.tileLayer(tileUrl, { attribution });
+
+      tiles.addTo(mymap);
+      const api_url = "https://api.wheretheiss.at/v1/satellites/25544";
+      async function getISS() {
+        const response = await fetch(api_url);
+        const data = await response.json();
+        const { latitude, longitude } = data;
+
+        if (firstTime) {
+          mymap.setView([latitude, longitude], 2);
+          firstTime = false;
+        }
+        marker.setLatLng([latitude, longitude]);
+        document.getElementById("lat").textContent = latitude;
+        document.getElementById("lon").textContent = longitude;
+      }
+      getISS();
+
+      setInterval(getISS, 10000);
+    </script>
+  </body>
+</html>
